@@ -30,6 +30,11 @@
   --sans: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Pretendard', 'Malgun Gothic',
     'Noto Sans KR', 'Helvetica Neue', sans-serif;
   --tabbar-h: 66px;
+  /* 아이폰 홈 인디케이터 영역(노치 기기 34px). env()를 못 읽는 브라우저는 0으로 둔다. */
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  /* 탭바(66px) + 탭바 위로 솟은 '만들기' + 버튼(10px) + 숨통(38px) = 114px.
+     마지막 내용이 탭바나 + 버튼에 가리지 않도록 모든 페이지가 이만큼을 비운다. */
+  --page-bottom: calc(var(--tabbar-h) + 48px + var(--safe-bottom));
 }
 
 *,
@@ -137,7 +142,7 @@ img {
   width: 100%;
   max-width: 620px;
   margin: 0 auto;
-  padding: 0 20px calc(var(--tabbar-h) + 40px);
+  padding: 0 20px var(--page-bottom);
   padding-left: max(20px, env(safe-area-inset-left));
   padding-right: max(20px, env(safe-area-inset-right));
   flex: 1;
@@ -148,7 +153,7 @@ img {
 }
 
 .page--no-tabs {
-  padding-bottom: 48px;
+  padding-bottom: calc(48px + var(--safe-bottom));
 }
 
 .stack {
@@ -187,17 +192,24 @@ img {
 
 /* ── 상단 바 ────────────────────────────────────────── */
 
+/* 상단 바. 스크롤하면 콘텐츠가 이 아래로 지나가므로 배경이 끝까지 불투명해야
+   헤더 밑으로 지나가는 사진 업로드 박스나 문구가 비쳐 '겹쳐 보이는' 일이 없다.
+   (iOS Safari 는 아래쪽이 투명한 그라데이션을 그대로 보여 주기 때문에
+   기존 62% 그라데이션 + 6px 블러로는 점선 박스가 헤더 글자 사이로 비쳐 보였다.) */
 .topbar {
   position: sticky;
   top: 0;
   z-index: 20;
+  isolation: isolate;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding: 14px 0 10px;
-  background: linear-gradient(180deg, var(--paper) 62%, rgba(246, 241, 232, 0));
-  backdrop-filter: blur(6px);
+  padding: 14px 0 12px;
+  background: rgba(247, 242, 233, 0.97);
+  -webkit-backdrop-filter: blur(14px) saturate(1.05);
+  backdrop-filter: blur(14px) saturate(1.05);
+  box-shadow: 0 1px 0 rgba(214, 201, 180, 0.45), 0 10px 18px -16px rgba(48, 36, 22, 0.4);
 }
 
 .topbar__brand {
@@ -523,6 +535,9 @@ img {
   display: flex;
   flex-direction: column;
   gap: 6px;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
 }
 
 .label {
@@ -534,13 +549,58 @@ img {
 
 .input,
 .textarea {
+  display: block;
+  box-sizing: border-box;
   width: 100%;
+  max-width: 100%;
+  min-width: 0;
   border: 1px solid var(--line-strong);
   background: var(--surface);
   border-radius: 11px;
   padding: 11px 13px;
   font-size: 15px;
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+/* iOS Safari 의 <input type="date"> 는 네이티브 날짜 위젯(내부 그림자 DOM)의 고유 폭과
+   가운데 정렬된 값 때문에 width: 100% 만으로는 카드 오른쪽 테두리를 뚫고 나간다.
+   appearance 를 지워 우리가 정한 상자 크기 그대로만 그리게 하고,
+   값은 다른 입력칸처럼 왼쪽에 붙인다. (SceneSheet 의 날짜 칸도 같은 규칙을 받는다.) */
+input[type='date'],
+input[type='datetime-local'],
+input[type='month'],
+input[type='time'] {
+  -webkit-appearance: none;
+  appearance: none;
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  text-align: left;
+  line-height: 1.35;
+}
+
+input[type='date']::-webkit-date-and-time-value,
+input[type='datetime-local']::-webkit-date-and-time-value,
+input[type='month']::-webkit-date-and-time-value,
+input[type='time']::-webkit-date-and-time-value {
+  text-align: left;
+  min-width: 0;
+}
+
+input[type='date']::-webkit-datetime-edit,
+input[type='datetime-local']::-webkit-datetime-edit,
+input[type='month']::-webkit-datetime-edit,
+input[type='time']::-webkit-datetime-edit {
+  text-align: left;
+  min-width: 0;
+  padding: 0;
+}
+
+input[type='date']::-webkit-calendar-picker-indicator {
+  margin-inline-start: 4px;
+  padding: 0;
 }
 
 .input:focus,
@@ -577,8 +637,8 @@ img {
   z-index: 40;
   width: 100%;
   max-width: 620px;
-  height: calc(var(--tabbar-h) + env(safe-area-inset-bottom));
-  padding-bottom: env(safe-area-inset-bottom);
+  height: calc(var(--tabbar-h) + var(--safe-bottom));
+  padding-bottom: var(--safe-bottom);
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   align-items: center;
@@ -1348,6 +1408,7 @@ img {
   align-items: center;
   justify-content: center;
   gap: 8px;
+  margin-top: 6px;
   padding: 34px 20px;
   border-radius: var(--radius);
   border: 1.5px dashed var(--line-strong);
@@ -1428,6 +1489,8 @@ img {
   background: var(--surface);
   border: 1px solid var(--line);
   box-shadow: var(--shadow-sm);
+  /* 어떤 입력칸이 카드 폭을 넘겨 계산되더라도 카드 밖으로 그려지지 않게 하는 안전장치. */
+  overflow: hidden;
 }
 
 .draft-card__head {
@@ -1479,8 +1542,16 @@ img {
   min-width: 0;
 }
 
+/* 날짜 입력칸은 flex-basis 0 + width 0 으로 두어, 네이티브 날짜 위젯의 고유 폭이
+   옆의 ‹ › 버튼을 밀어내거나 시트 밖으로 넘치지 않게 한다. */
+.date-row {
+  min-width: 0;
+}
+
 .date-row .input {
-  flex: 1;
+  flex: 1 1 0;
+  width: 0;
+  max-width: 100%;
   min-width: 0;
 }
 
@@ -1534,7 +1605,7 @@ img {
 .reader {
   max-width: 620px;
   margin: 0 auto;
-  padding: 0 22px 60px;
+  padding: 0 22px calc(60px + var(--safe-bottom));
   padding-left: max(22px, env(safe-area-inset-left));
   padding-right: max(22px, env(safe-area-inset-right));
 }
@@ -1843,7 +1914,7 @@ img {
 .toast {
   position: fixed;
   left: 50%;
-  bottom: calc(var(--tabbar-h) + 20px + env(safe-area-inset-bottom));
+  bottom: calc(var(--tabbar-h) + 48px + var(--safe-bottom));
   transform: translateX(-50%);
   z-index: 120;
   max-width: min(88vw, 420px);
@@ -1926,7 +1997,7 @@ img {
 
   .tabbar + .page,
   .page {
-    padding-bottom: 120px;
+    padding-bottom: calc(var(--tabbar-h) + 54px);
   }
 
   .sheet-backdrop {
