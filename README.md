@@ -3,6 +3,8 @@
 > 매일 쓰지 않아도 쌓이는 자서전.
 > 사진 한 장과 한 줄의 답으로 장면을 만들고, 고른 톤으로 한 편의 글로 엮습니다.
 
+**라이브 데모 — <https://bmws-g.github.io/timeline-web/>** (GitHub Pages, `gh-pages` 브랜치가 `dist/`를 서빙)
+
 Vue 3 + Vite + TypeScript로 만든 **설치 없이 바로 열리는 웹 앱(PWA)** 입니다. 서버도, 데이터베이스도, API 키도 없이 첫 화면부터 끝까지 동작하며, Vercel·Cloudflare Pages에 그대로 올릴 수 있습니다. 원하면 설정에서 Gemini 키를 넣어 실제 AI 문장으로 바꿀 수 있고, `docs/timeline-mvp-schema.sql`의 Supabase 스키마로 확장할 수 있습니다.
 
 | 온보딩 · 톤 선택 | 홈 · 책 진행감 | 장면 · 1줄 인터뷰 |
