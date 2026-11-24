@@ -73,8 +73,8 @@ const gps = computed(() => {
 })
 
 const question = computed(() => {
-  const place = form.locationName.trim() || '오늘'
-  return tone.value.interview(place)
+  const place = form.locationName.trim()
+  return tone.value.interview(place || undefined)
 })
 
 function toggleMood(key: MoodKey) {
