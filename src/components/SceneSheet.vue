@@ -3,16 +3,18 @@ import { computed, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
 import Icon from './Icon.vue'
 import { activeTone } from '../lib/toneView'
 import { MOODS, moodOf } from '../data/tones'
-import type { MoodKey } from '../types'
+import type { MoodKey, PlaceLookupState } from '../types'
 import { addPerson, removeScene, state, toast, ui, updateScene } from '../store'
 import { addDays, formatDate, fromKey, formatTime, toKey } from '../lib/date'
 import { buildAutoSummary, buildTitle, coordinateLabel } from '../lib/scene'
+import { reverseGeocode } from '../lib/geocode'
 
 const scene = computed(() => state.scenes.find((s) => s.id === ui.sceneSheetId) ?? null)
 const tone = computed(() => activeTone())
 const saving = ref(false)
 const removing = ref(false)
 const newPerson = ref('')
+const placeLookup = ref<'idle' | PlaceLookupState>('idle')
 
 const form = reactive({
   note: '',
@@ -24,6 +26,7 @@ const form = reactive({
 
 function reset() {
   const s = scene.value
+  placeLookup.value = 'idle'
   if (!s) return
   form.note = s.userNote ?? ''
   form.mood = s.mood
@@ -32,6 +35,32 @@ function reset() {
   form.eventDate = s.eventDate
   newPerson.value = ''
   removing.value = false
+  // 사진 좌표는 있는데 장소명이 비어 있으면 열릴 때 바로 찾아 채운다.
+  if (!s.locationName && typeof s.lat === 'number' && typeof s.lng === 'number') void lookupPlace()
+}
+
+/** 사진 좌표로 장소명을 조회한다. 사용자가 직접 고친 이름은 건드리지 않는다(다시 찾기 예외). */
+async function lookupPlace(notify = false) {
+  const s = scene.value
+  if (!s || typeof s.lat !== 'number' || typeof s.lng !== 'number') return
+  const sceneId = s.id
+  placeLookup.value = 'searching'
+  try {
+    const name = await reverseGeocode(s.lat, s.lng)
+    if (scene.value?.id !== sceneId) return
+    if (name) {
+      if (notify || !form.locationName.trim()) form.locationName = name
+      placeLookup.value = 'found'
+      if (notify) toast(`장소를 찾았어요: ${name}`, 'success')
+    } else {
+      placeLookup.value = 'empty'
+      if (notify) toast('이 좌표에서는 장소명을 찾지 못했어요. 직접 적어 주세요.', 'info')
+    }
+  } catch {
+    if (scene.value?.id !== sceneId) return
+    placeLookup.value = 'failed'
+    if (notify) toast('장소명을 찾지 못했어요. 직접 적거나 잠시 뒤 다시 시도해 주세요.', 'error')
+  }
 }
 
 watch(() => ui.sceneSheetId, reset, { immediate: true })
@@ -44,8 +73,7 @@ const gps = computed(() => {
 })
 
 const question = computed(() => {
-  const s = scene.value
-  const place = s?.locationName?.trim() || '오늘'
+  const place = form.locationName.trim() || '오늘'
   return tone.value.interview(place)
 })
 
@@ -238,9 +266,10 @@ const title = computed(() => {
 
       <div class="sheet__section">
         <p class="label">날짜와 장소</p>
-        <div class="grid-2">
+        <div class="field-pair">
           <div class="field">
-            <div class="row" style="gap: 4px">
+            <span class="label">날짜</span>
+            <div class="row date-row" style="gap: 4px">
               <button class="icon-btn icon-btn--plain" aria-label="하루 전" @click="shiftDate(-1)">
                 <Icon name="chevron-left" :size="16" />
               </button>
@@ -251,8 +280,35 @@ const title = computed(() => {
             </div>
           </div>
           <div class="field">
-            <input v-model="form.locationName" class="input" placeholder="장소 (예: 신림동 카페)" style="font-size: 14px" />
+            <span class="label">장소</span>
+            <input v-model="form.locationName" class="input" placeholder="예: 신림동 카페" style="font-size: 14px" />
           </div>
+        </div>
+
+        <div v-if="gps" class="place-help">
+          <p v-if="placeLookup !== 'idle'" class="hint place-help__text">
+            <template v-if="placeLookup === 'searching'">
+              <span class="spinner" aria-hidden="true" /> 사진 좌표로 장소명을 찾는 중…
+            </template>
+            <template v-else-if="placeLookup === 'found'">
+              <Icon name="map-pin" :size="11" style="vertical-align: -1px" />
+              OpenStreetMap에서 고른 이름 · 좌표 {{ gps }}
+            </template>
+            <template v-else-if="placeLookup === 'empty'">
+              이 좌표에서는 장소명을 찾지 못했어요. 직접 적어 주세요.
+            </template>
+            <template v-else-if="placeLookup === 'failed'">
+              장소명을 찾지 못했어요(네트워크). 직접 적거나 다시 찾아 주세요.
+            </template>
+          </p>
+          <button
+            v-if="placeLookup !== 'searching'"
+            class="btn btn--quiet btn--sm place-help__retry"
+            @click="lookupPlace(true)"
+          >
+            <Icon name="map-pin" :size="14" />
+            {{ placeLookup === 'found' ? '장소명 다시 찾기' : '좌표로 장소명 찾기' }}
+          </button>
         </div>
       </div>
 

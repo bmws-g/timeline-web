@@ -57,7 +57,7 @@ function back() {
         <div class="intro-points">
           <div class="intro-point">
             <span class="intro-point__num">1</span>
-            <span><b>사진을 올리면 장면이 생깁니다.</b><br />촬영 시각과 GPS를 읽어 날짜별 카드로 정리해요.</span>
+            <span><b>사진을 올리면 장면이 생깁니다.</b><br />촬영 시각과 GPS로 날짜·장소를 채워 날짜별 카드로 정리해요.</span>
           </div>
           <div class="intro-point">
             <span class="intro-point__num">2</span>

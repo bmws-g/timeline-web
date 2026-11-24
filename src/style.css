@@ -1465,10 +1465,68 @@ img {
   flex: none;
 }
 
-.grid-2 {
+/* 날짜·장소처럼 짝을 이루는 입력칸.
+   좁은 화면에서는 한 줄에 하나씩 쌓아 서로 붙어 보이지 않게 하고,
+   520px 이상에서만 나란히 둔다. minmax(0, 1fr)로 날짜 입력칸의 고유 폭 때문에
+   옆 칸(장소)이 짓눌리거나 카드 밖으로 삐져나오는 일을 막는다. */
+.field-pair {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 14px;
+}
+
+.field-pair > * {
+  min-width: 0;
+}
+
+.date-row .input {
+  flex: 1;
+  min-width: 0;
+}
+
+@media (min-width: 520px) {
+  .field-pair {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px 16px;
+  }
+}
+
+/* 좌표 → 장소명 조회 상태 */
+.place-help {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  margin-top: 8px;
+}
+
+.place-help__text {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.place-help__retry {
+  flex: none;
+  padding-left: 0;
+  color: var(--accent);
+}
+
+.spinner {
+  display: inline-block;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  border: 1.5px solid var(--line-strong);
+  border-top-color: var(--accent);
+  animation: spin 0.7s linear infinite;
+  vertical-align: -1px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* ── 독자(리더) ─────────────────────────────────────── */

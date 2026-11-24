@@ -94,6 +94,9 @@ export interface AppState {
   settings: Settings
 }
 
+/** 사진 좌표로 장소명을 찾는 중인지, 찾았는지 — 화면 표시용 */
+export type PlaceLookupState = 'searching' | 'found' | 'empty' | 'failed'
+
 /** 사진 업로드 후 아직 장면으로 저장되지 않은 초안 */
 export interface SceneDraft {
   key: string
@@ -104,4 +107,6 @@ export interface SceneDraft {
   lng?: number
   photos: PhotoMeta[]
   note: string
+  /** 사진 GPS로 장소명을 자동 조회한 상태 (좌표가 없으면 비어 있음) */
+  placeLookup?: PlaceLookupState
 }
