@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="타임라인">
+  <rect width="512" height="512" rx="112" fill="#9a4a2f" />
+  <rect x="132" y="112" width="248" height="288" rx="20" fill="#f7f2e9" />
+  <path d="M172 112v288" stroke="#e6d7c2" stroke-width="20" />
+  <rect x="204" y="168" width="136" height="18" rx="9" fill="#d9a78c" />
+  <rect x="204" y="214" width="108" height="18" rx="9" fill="#e3bda6" />
+  <rect x="204" y="260" width="128" height="18" rx="9" fill="#ecd2c0" />
+  <circle cx="210" cy="340" r="9" fill="#9a4a2f" />
+  <circle cx="264" cy="340" r="9" fill="#c07a52" />
+  <circle cx="318" cy="340" r="9" fill="#d9a78c" />
+  <path d="M210 340h108" stroke="#c07a52" stroke-width="4" stroke-linecap="round" />
+</svg>
