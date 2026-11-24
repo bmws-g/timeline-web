@@ -581,7 +581,7 @@ input[type='time'] {
   max-width: 100%;
   min-width: 0;
   text-align: left;
-  line-height: 1.35;
+  line-height: inherit;
 }
 
 /* iOS 는 값을 가운데 정렬해 두고, 값이 비어 있으면 높이가 0 으로 줄어든다
