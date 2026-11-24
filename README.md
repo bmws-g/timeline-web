@@ -3,7 +3,7 @@
 > 매일 쓰지 않아도 쌓이는 자서전.
 > 사진 한 장과 한 줄의 답으로 장면을 만들고, 고른 톤으로 한 편의 글로 엮습니다.
 
-Vue 3 + Vite + TypeScript로 만든 **설치 없이 바로 열리는 웹 앱(PWA)** 입니다. 서버도, 데이터베이스도, API 키도 없이 첫 화면부터 끝까지 동작하며, Vercel·Cloudflare Pages에 그대로 올릴 수 있습니다. 원하면 설정에서 Gemini 키를 넣어 실제 AI 문장으로 바꿀 수 있고, `ideas/timeline-mvp-schema.sql`의 Supabase 스키마로 확장할 수 있습니다.
+Vue 3 + Vite + TypeScript로 만든 **설치 없이 바로 열리는 웹 앱(PWA)** 입니다. 서버도, 데이터베이스도, API 키도 없이 첫 화면부터 끝까지 동작하며, Vercel·Cloudflare Pages에 그대로 올릴 수 있습니다. 원하면 설정에서 Gemini 키를 넣어 실제 AI 문장으로 바꿀 수 있고, `docs/timeline-mvp-schema.sql`의 Supabase 스키마로 확장할 수 있습니다.
 
 | 온보딩 · 톤 선택 | 홈 · 책 진행감 | 장면 · 1줄 인터뷰 |
 | --- | --- | --- |
@@ -101,7 +101,7 @@ Safari로 배포 주소를 연 뒤 **공유 → 홈 화면에 추가**. `manifes
 
 ### 스키마와의 대응
 
-`ideas/timeline-mvp-schema.sql`의 테이블과 앱 타입은 다음처럼 맞춰 두었습니다 (`src/types.ts`).
+`docs/timeline-mvp-schema.sql`의 테이블과 앱 타입은 다음처럼 맞춰 두었습니다 (`src/types.ts`).
 
 | 앱 타입 | Supabase 테이블 | 비고 |
 | --- | --- | --- |
@@ -112,7 +112,7 @@ Safari로 배포 주소를 연 뒤 **공유 → 홈 화면에 추가**. `manifes
 
 ## 6. Supabase로 확장하기
 
-1. Supabase 프로젝트를 만들고 SQL Editor에서 `../ideas/timeline-mvp-schema.sql`을 실행합니다. (`pgcrypto`, `pg_trgm`, `btree_gist` 확장과 RLS 정책이 함께 들어 있습니다.)
+1. Supabase 프로젝트를 만들고 SQL Editor에서 `docs/timeline-mvp-schema.sql`을 실행합니다. (`pgcrypto`, `pg_trgm`, `btree_gist` 확장과 RLS 정책이 함께 들어 있습니다.)
 2. Authentication에서 이메일 또는 Apple 로그인을 켭니다.
 3. `.env.example`을 `.env.local`로 복사하고 값을 채웁니다.
 
@@ -200,6 +200,6 @@ timeline-web/
 
 ### 참고 문서
 
-- `../ideas/timeline-app.md` — 앱 아이디어 노트
-- `../ideas/timeline-mvp-spec.md` — 데이터 모델·화면·배치 설계
-- `../ideas/timeline-mvp-schema.sql` — PostgreSQL DDL 전문
+- `docs/timeline-app.md` — 앱 아이디어 노트
+- `docs/timeline-mvp-spec.md` — 데이터 모델·화면·배치 설계
+- `docs/timeline-mvp-schema.sql` — PostgreSQL DDL 전문

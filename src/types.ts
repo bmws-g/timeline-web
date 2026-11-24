@@ -1,4 +1,4 @@
-/** 타임라인 MVP 데이터 모델 — ideas/timeline-mvp-schema.sql 과 1:1로 대응합니다. */
+/** 타임라인 MVP 데이터 모델 — docs/timeline-mvp-schema.sql 과 1:1로 대응합니다. */
 
 export type ToneKey = 'friend' | 'essay' | 'biography' | 'warm_letter'
 
