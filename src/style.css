@@ -564,8 +564,11 @@ img {
 
 /* iOS Safari 의 <input type="date"> 는 네이티브 날짜 위젯(내부 그림자 DOM)의 고유 폭과
    가운데 정렬된 값 때문에 width: 100% 만으로는 카드 오른쪽 테두리를 뚫고 나간다.
-   appearance 를 지워 우리가 정한 상자 크기 그대로만 그리게 하고,
-   값은 다른 입력칸처럼 왼쪽에 붙인다. (SceneSheet 의 날짜 칸도 같은 규칙을 받는다.) */
+   (iOS 는 날짜 칸을 버튼처럼 그리고, 기기 언어의 가장 긴 날짜 문자열을 min-width 로
+   잡은 뒤 box-sizing 을 content-box 로 되돌린다.)
+   appearance 를 지우면 폭·여백·박스 모델이 우리가 쓴 값 그대로가 되고,
+   날짜 고르개는 type=date 라서 그대로 뜬다. 값은 다른 입력칸처럼 왼쪽에 붙인다.
+   (SceneSheet 의 날짜 칸도 같은 규칙을 받는다.) */
 input[type='date'],
 input[type='datetime-local'],
 input[type='month'],
@@ -581,18 +584,24 @@ input[type='time'] {
   line-height: 1.35;
 }
 
+/* iOS 는 값을 가운데 정렬해 두고, 값이 비어 있으면 높이가 0 으로 줄어든다
+   (WebKit 버그 198959). 한 줄 높이를 잡아 두어 빈 칸도 다른 입력칸과 같은 높이가 된다. */
 input[type='date']::-webkit-date-and-time-value,
 input[type='datetime-local']::-webkit-date-and-time-value,
 input[type='month']::-webkit-date-and-time-value,
 input[type='time']::-webkit-date-and-time-value {
+  margin: 0;
   text-align: left;
   min-width: 0;
+  min-height: 1.2em;
+  min-height: 1lh;
 }
 
 input[type='date']::-webkit-datetime-edit,
 input[type='datetime-local']::-webkit-datetime-edit,
 input[type='month']::-webkit-datetime-edit,
-input[type='time']::-webkit-datetime-edit {
+input[type='time']::-webkit-datetime-edit,
+input::-webkit-datetime-edit-fields-wrapper {
   text-align: left;
   min-width: 0;
   padding: 0;
